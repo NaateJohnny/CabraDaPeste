@@ -3,7 +3,7 @@ Projeto de game da disciplina de estágio 1
 
 
 ## História
-  Bredisvaldo Ysmite desde de bacurim era um rapaz corajoso e determinado ajudando sua família e vizinhos, chegando a sua adolecência teve em mente ir lutar contra as adversidades que assolam o nordeste brasileiro.
+  Bredisvaldo Ysmite desde de bacurim era um rapaz corajoso e determinado, sempre ajudando sua família e vizinhos. Chegando a sua adolecência teve em mente ir lutar contra as adversidades que assolam o nordeste brasileiro. Então vestiu seu traje e pegou o que tinha da armamento e seguiu sertão a fora para guerrar contra as adversidades.
 
 
 ## Objetivos
