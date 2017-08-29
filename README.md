@@ -12,6 +12,8 @@ Projeto de game da disciplina de estágio 1
 
 ## Diagrama de navegação
  
+ ![diagrama](Diagrama_de_Navegacao-CabraDaPeste.png)
+ 
    |1. Splash Scene| 
    | ------------ |
 
