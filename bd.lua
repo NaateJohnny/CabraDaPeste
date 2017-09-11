@@ -10,7 +10,15 @@ local sheetInfo = require("sprites.lampion")
 local sheet = graphics.newImageSheet( "assets/img/lampion.png", sheetInfo:getSheet() )
 
 
+
+
 --Initialize Variables
+local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
+local comecou = false
+local velocidade = 6
+local fundo = {}
+local fx = {120,200}
+
 
 local lives = 3
 local score = 0
@@ -30,7 +38,7 @@ local h = display.contentHeight -- variable of higth
 local eixoX = w - 5
 local eixoY = h
 
-local runnerLampiao = {
+local sequenciaLampiao = {
 		    { 
 		    	name="parado", 
 		    	frames={ 
@@ -80,16 +88,25 @@ local runnerLampiao = {
 		    	}, 
 		    	time=400
 		    },
-}
+		}
 
-local sequenceLamp = {
-    { name= "parado", start = 1, count = 9, time = 1000 , loopCount = 9, loopDirection = "forward"},
-    { name= "andandoRight", start= 10, count = 14, time =1000, loopCount = 0, loopDirection= "forward" },
-    { name= "andandoLeft", start= 15, count = 29, time =1000, loopCount = 0, loopDirection= "forward" }
+function scene:create( event )
+	local group = self.view
 
-}
+	lampiao = display.newSprite( sheet , sequenciaLampiao)
+	lampiao.anchorX = 0.5
+	lampiao.anchorY = 0.5
+	lampiao.x = 10
+	lampiao.y = 94
+	lampiao:scale(0.5,0.5)
+	lampiao.nome = "lampiao"
+	lampiao:setSequence("parado")
+	lampiao:play()
+	
+	group:insert( lampiao )
 
 
+end
 
 -- Set up display groups
 local backGroup = display.newGroup()  -- Display group for the background image
@@ -116,42 +133,33 @@ solo.x = display.contentCenterX
 solo.y = h - 01
 physics.addBody(solo, "static",  {friction=1})
 
-lampiao = display.newSprite( backGroup, sheet, sequenceLamp)
-lampiao.x = 0
-lampiao.y = 0
-physics.addBody( lampiao, "dynamic", {radius=1, bounce=0.1, friction=2, isSensor=false} )
-lampiao: setSequence("parado")
-lampiao.myName = "lampiao"
-
---lampiao: play()
 
 
 -- Display lives and score
-livesText = display.newText( uiGroup, "Lives: " .. lives, 200, 80, native.systemFont, 36 )
-scoreText = display.newText( uiGroup, "Score: " .. score, 400, 80, native.systemFont, 36 )
+--livesText = display.newText( uiGroup, "Lives: " .. lives, 200, 80, native.systemFont, 36 )
+--scoreText = display.newText( uiGroup, "Score: " .. score, 400, 80, native.systemFont, 36 )
 
 -- Hide the status bar
 display.setStatusBar( display.HiddenStatusBar )
 
-local function updateText()
-    livesText.text = "Lives: " .. lives
-    scoreText.text = "Score: " .. score
-end
+--local function updateText()
+    --livesText.text = "Lives: " .. lives
+    --scoreText.text = "Score: " .. score
+--end
 
 -- set game buttons
 -- rigth
 buttons[1] = display.newImage("assets/buttons/lineLight22.png")
 buttons[1].x = -100
 buttons[1].y = 700
-buttons[1].alpha = .2
-buttons[1].myName = "buttonLeft"
+buttons[1].myName = "buttonRight"
 
 -- left
-buttons[2] = display.newImage("assets/buttons/lineLight23.png")
+buttons[2] = display.newImage("assets/buttons/lineLight22.png")
 buttons[2].x = 10
 buttons[2].y = 700
-buttons[2].alpha = .2
-buttons[2].myName = "buttonRight"
+buttons[2].rotation = 180
+buttons[2].myName = "buttonLeft"
 
 local touchFunction = function(e)
     local eventName = e.phase
@@ -159,23 +167,13 @@ local touchFunction = function(e)
 
     if eventName == "began" or eventName == "moved" then
         if direction == "buttonRight" then
-			lampiao: setSequence("andandoRight")
-			lampiao.myName = "lampiao"
-
-			lampiao: play()	
-
-			eixoX = 5
-            eixoY = h - 21
-            print("Rigth")
-        elseif direction == "buttonLeft" then
-			lampiao: setSequence("andandoLeft")
-			lampiao.myName = "lampiao"
-
-			lampiao: play()	
-
             eixoX = -5
             eixoY = h - 21
-            print("Left")
+            print("rigth")
+        elseif direction == "buttonLeft" then
+            eixoX = 5
+            eixoY = h - 21
+            print("left")
         end
     else
         eixoX = 0
@@ -194,7 +192,7 @@ end
 
 local update = function()
 	lampiao.x = lampiao.x + eixoX
-	lampiao.y = h - 500
+	lampiao.y = lampiao.y + eixoY
 
 	if lampiao.x <= lampiao.width * .1 then 
 		lampiao.x = lampiao.width * .1
@@ -210,3 +208,21 @@ local update = function()
 end
 
 Runtime:addEventListener("enterFrame", update)
+
+function toque( event )
+ if(comecou==false and caindo==false and event.phase == "began") then
+ 	comecou = true
+ 	lampiao:setSequence("andando")
+ 	lampiao:play()
+ end
+end
+
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
+
+Runtime:addEventListener( "touch", toque )
+
+
+return scene
