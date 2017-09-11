@@ -34,3 +34,5 @@ Projeto de game da disciplina de estágio 1
 ## Como o Jogo Acaba
   O jogo encerra quando o Bredisvaldo derrotar todas as adversidades, das quais serão dívidas em fases.
   
+## Mapa de Atividades
+  https://trello.com/b/lWRz24M6/cabra-da-peste
