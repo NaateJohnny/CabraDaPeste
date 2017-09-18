@@ -32,7 +32,7 @@ local eixoY = h
 
 local runnerLampiao = {
 		    { 
-		    	name="parado", 
+		    	name="paradoRigth", 
 		    	frames={ 
 		    		sheetInfo:getFrameIndex("p1"),
                     sheetInfo:getFrameIndex("p2"),
@@ -44,10 +44,25 @@ local runnerLampiao = {
 		    		sheetInfo:getFrameIndex("p8"),
 		    		sheetInfo:getFrameIndex("p9"),
 		    	}, 
-		    	time=200
+		    	time=500
+		    },
+			{ 
+		    	name="paradoLeft", 
+		    	frames={ 
+		    		sheetInfo:getFrameIndex("o1"),
+                    sheetInfo:getFrameIndex("o2"),
+		    		sheetInfo:getFrameIndex("o3"),
+		    		sheetInfo:getFrameIndex("o4"),
+		    		sheetInfo:getFrameIndex("o5"),
+                    sheetInfo:getFrameIndex("o6"),
+		    		sheetInfo:getFrameIndex("o7"),
+		    		sheetInfo:getFrameIndex("o8"),
+		    		sheetInfo:getFrameIndex("o9"),
+		    	}, 
+		    	time=500
 		    },
 		    { 
-		    	name="andando", 
+		    	name="andandoRigth", 
 		    	frames={ 
 		    		sheetInfo:getFrameIndex("m1"),
 		    		sheetInfo:getFrameIndex("m2"),
@@ -63,6 +78,12 @@ local runnerLampiao = {
 		    		sheetInfo:getFrameIndex("m12"),
                     sheetInfo:getFrameIndex("m13"),
 		    		sheetInfo:getFrameIndex("m14"),
+		    	}, 
+		    	time=500
+		    },
+			{ 
+		    	name="andandoLeft", 
+		    	frames={
                     sheetInfo:getFrameIndex("n1"),
 		    		sheetInfo:getFrameIndex("n2"),
 		    		sheetInfo:getFrameIndex("n3"),
@@ -78,14 +99,15 @@ local runnerLampiao = {
                     sheetInfo:getFrameIndex("n13"),
 		    		sheetInfo:getFrameIndex("n14"),
 		    	}, 
-		    	time=400
+		    	time=500
 		    },
 }
 
 local sequenceLamp = {
-    { name= "parado", start = 1, count = 9, time = 1000 , loopCount = 9, loopDirection = "forward"},
-    { name= "andandoRight", start= 10, count = 14, time =1000, loopCount = 0, loopDirection= "forward" },
-    { name= "andandoLeft", start= 15, count = 29, time =1000, loopCount = 0, loopDirection= "forward" }
+    { name= "paradoLeft", start = 29, count = 9, time = 1000 , loopCount = 0},--loopDirection = "forward"},
+	{ name= "paradoRigth", start = 38, count = 9, time = 1000 , loopCount = 0},--loopDirection = "forward"},
+    { name= "andandoRight", start= 1, count = 14, time =1000, loopCount = 0}, --loopDirection= "forward" },
+    { name= "andandoLeft", start= 15, count = 14, time =1000, loopCount = 0},-- loopDirection= "forward" }
 
 }
 
@@ -113,11 +135,11 @@ background.y = h - 510
 --Solo image
 local solo = display.newImageRect( backGroup, "assets/img/solo.png", 1450, 320 )
 solo.x = display.contentCenterX
-solo.y = h - 01
+solo.y = h - 50
 physics.addBody(solo, "static",  {friction=1})
 
 lampiao = display.newSprite( backGroup, sheet, sequenceLamp)
-lampiao.x = 0
+lampiao.x = display.contentCenterX - 100
 lampiao.y = 0
 physics.addBody( lampiao, "dynamic", {radius=1, bounce=0.1, friction=2, isSensor=false} )
 lampiao: setSequence("parado")
@@ -142,14 +164,14 @@ end
 -- rigth
 buttons[1] = display.newImage("assets/buttons/lineLight22.png")
 buttons[1].x = -100
-buttons[1].y = 700
+buttons[1].y = 680
 buttons[1].alpha = .2
 buttons[1].myName = "buttonLeft"
 
 -- left
 buttons[2] = display.newImage("assets/buttons/lineLight23.png")
 buttons[2].x = 10
-buttons[2].y = 700
+buttons[2].y = 680
 buttons[2].alpha = .2
 buttons[2].myName = "buttonRight"
 
@@ -162,8 +184,6 @@ local touchFunction = function(e)
 			lampiao: setSequence("andandoRight")
 			lampiao.myName = "lampiao"
 
-			lampiao: play()	
-
 			eixoX = 5
             eixoY = h - 21
             print("Rigth")
@@ -171,19 +191,22 @@ local touchFunction = function(e)
 			lampiao: setSequence("andandoLeft")
 			lampiao.myName = "lampiao"
 
-			lampiao: play()	
-
             eixoX = -5
             eixoY = h - 21
             print("Left")
         end
     else
+
+		if e.target.myName == "buttonRight" then
+			lampiao:setSequence("paradoRigth")
+		elseif e.target.myName == "buttonLeft" then
+			lampiao:setSequence("paradoLeft")
+		end
+
         eixoX = 0
-        eixoY = h - 21
+        eixoY = 0
     end
 end
-
-local j=1
 
 local j=1
 
@@ -206,7 +229,10 @@ local update = function()
 		lampiao.y = lampiao.height * 4.5
 	elseif lampiao.y >= h - lampiao.height * 4.5 then 
 		lampiao.y = h - lampiao.height * 4.5
-	end 
+	end
+
+	lampiao: play()	
+
 end
 
 Runtime:addEventListener("enterFrame", update)

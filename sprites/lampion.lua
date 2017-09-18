@@ -1,7 +1,7 @@
 --
 -- created with TexturePacker (http://www.codeandweb.com/texturepacker)
 --
--- $TexturePacker:SmartUpdate:ac5cda79a090622f4a7bc833d561ad7c:440f20386e3418e880d63d9ac9443c6a:22cd86d88046b35f9f05cfe4818876be$
+-- $TexturePacker:SmartUpdate:7721339d40e29d2620a0132fd403fc7b:50b6f60ab16f37a6d3b371dd90210b7b:22cd86d88046b35f9f05cfe4818876be$
 --
 -- local sheetInfo = require("mysheet")
 -- local myImageSheet = graphics.newImageSheet( "mysheet.png", sheetInfo:getSheet() )
@@ -48,126 +48,6 @@ SheetInfo.sheet =
         },
         {
             -- m5
-            x=428,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m6
-            x=535,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m7
-            x=642,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m8
-            x=749,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m9
-            x=856,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m10
-            x=963,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m11
-            x=1070,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m12
-            x=1177,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m13
-            x=1284,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- m14
-            x=1391,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- n1
-            x=1498,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- n2
-            x=1605,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- n3
-            x=1712,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- n4
-            x=1819,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- n5
-            x=1926,
-            y=0,
-            width=107,
-            height=111,
-
-        },
-        {
-            -- n6
             x=0,
             y=111,
             width=107,
@@ -175,7 +55,7 @@ SheetInfo.sheet =
 
         },
         {
-            -- n7
+            -- m6
             x=107,
             y=111,
             width=107,
@@ -183,7 +63,7 @@ SheetInfo.sheet =
 
         },
         {
-            -- n8
+            -- m7
             x=214,
             y=111,
             width=107,
@@ -191,7 +71,7 @@ SheetInfo.sheet =
 
         },
         {
-            -- n9
+            -- m8
             x=321,
             y=111,
             width=107,
@@ -199,121 +79,313 @@ SheetInfo.sheet =
 
         },
         {
+            -- m9
+            x=0,
+            y=222,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- m10
+            x=107,
+            y=222,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- m11
+            x=214,
+            y=222,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- m12
+            x=321,
+            y=222,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- m13
+            x=0,
+            y=333,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- m14
+            x=107,
+            y=333,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n1
+            x=214,
+            y=333,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n2
+            x=321,
+            y=333,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n3
+            x=0,
+            y=444,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n4
+            x=107,
+            y=444,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n5
+            x=214,
+            y=444,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n6
+            x=321,
+            y=444,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n7
+            x=0,
+            y=555,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n8
+            x=107,
+            y=555,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- n9
+            x=214,
+            y=555,
+            width=107,
+            height=111,
+
+        },
+        {
             -- n10
-            x=428,
-            y=111,
+            x=321,
+            y=555,
             width=107,
             height=111,
 
         },
         {
             -- n11
-            x=535,
-            y=111,
+            x=0,
+            y=666,
             width=107,
             height=111,
 
         },
         {
             -- n12
-            x=642,
-            y=111,
+            x=107,
+            y=666,
             width=107,
             height=111,
 
         },
         {
             -- n13
-            x=749,
-            y=111,
+            x=214,
+            y=666,
             width=107,
             height=111,
 
         },
         {
             -- n14
-            x=856,
-            y=111,
+            x=321,
+            y=666,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o1
+            x=0,
+            y=777,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o2
+            x=107,
+            y=777,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o3
+            x=214,
+            y=777,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o4
+            x=321,
+            y=777,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o5
+            x=0,
+            y=888,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o6
+            x=107,
+            y=888,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o7
+            x=214,
+            y=888,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o8
+            x=321,
+            y=888,
+            width=107,
+            height=111,
+
+        },
+        {
+            -- o9
+            x=0,
+            y=999,
             width=107,
             height=111,
 
         },
         {
             -- p1
-            x=963,
-            y=111,
+            x=107,
+            y=999,
             width=107,
             height=111,
 
         },
         {
             -- p2
-            x=1070,
-            y=111,
+            x=214,
+            y=999,
             width=107,
             height=111,
 
         },
         {
             -- p3
-            x=1177,
-            y=111,
+            x=321,
+            y=999,
             width=107,
             height=111,
 
         },
         {
             -- p4
-            x=1284,
-            y=111,
+            x=0,
+            y=1110,
             width=107,
             height=111,
 
         },
         {
             -- p5
-            x=1391,
-            y=111,
+            x=107,
+            y=1110,
             width=107,
             height=111,
 
         },
         {
             -- p6
-            x=1498,
-            y=111,
+            x=214,
+            y=1110,
             width=107,
             height=111,
 
         },
         {
             -- p7
-            x=1605,
-            y=111,
+            x=321,
+            y=1110,
             width=107,
             height=111,
 
         },
         {
             -- p8
-            x=1712,
-            y=111,
+            x=0,
+            y=1221,
             width=107,
             height=111,
 
         },
         {
             -- p9
-            x=1819,
-            y=111,
+            x=107,
+            y=1221,
             width=107,
             height=111,
 
         },
     },
     
-    sheetContentWidth = 2033,
-    sheetContentHeight = 222
+    sheetContentWidth = 428,
+    sheetContentHeight = 1332
 }
 
 SheetInfo.frameIndex =
@@ -347,23 +419,32 @@ SheetInfo.frameIndex =
     ["n12"] = 26,
     ["n13"] = 27,
     ["n14"] = 28,
-    ["p1"] = 29,
-    ["p2"] = 30,
-    ["p3"] = 31,
-    ["p4"] = 32,
-    ["p5"] = 33,
-    ["p6"] = 34,
-    ["p7"] = 35,
-    ["p8"] = 36,
-    ["p9"] = 37,
+    ["o1"] = 29,
+    ["o2"] = 30,
+    ["o3"] = 31,
+    ["o4"] = 32,
+    ["o5"] = 33,
+    ["o6"] = 34,
+    ["o7"] = 35,
+    ["o8"] = 36,
+    ["o9"] = 37,
+    ["p1"] = 38,
+    ["p2"] = 39,
+    ["p3"] = 40,
+    ["p4"] = 41,
+    ["p5"] = 42,
+    ["p6"] = 43,
+    ["p7"] = 44,
+    ["p8"] = 45,
+    ["p9"] = 46,
 }
 
 function SheetInfo:getSheet()
-    return SheetInfo.sheet;
+    return self.sheet;
 end
 
 function SheetInfo:getFrameIndex(name)
-    return SheetInfo.frameIndex[name];
+    return self.frameIndex[name];
 end
 
 return SheetInfo
