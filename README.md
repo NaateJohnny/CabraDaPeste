@@ -29,7 +29,7 @@ Projeto de game da disciplina de estágio 1
   
 
 ## Sistema de Vidas
-  Inicia com 3 vidas, e o limite máximo de vidas é 5. A vidas são feijões mulatinho que estão no percurso traçado.
+  Inicia com 3 vidas, e o limite máximo de vidas é 7. A vidas são feijões mulatinho que estão no percurso traçado.
   
 ## Como o Jogo Acaba
   O jogo encerra quando o Bredisvaldo derrotar todas as adversidades, das quais serão dívidas em fases.
@@ -38,4 +38,4 @@ Projeto de game da disciplina de estágio 1
   https://trello.com/b/lWRz24M6/cabra-da-peste
   
 ## Estórias de Usuário
-  https://trello.com/b/4ETPw3l1/est%C3%B3rias-de-usu%C3%A1rio-cabra-da-peste
+  https://trello.com/b/4ETPw3l1/estorias-de-usuario-cabra-da-peste
