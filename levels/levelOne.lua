@@ -179,7 +179,7 @@ lampiao:addEventListener( "tap", tiroBala )
 ]]
 
 local function tiroDireita()
-        local newBala = display.newImageRect(mainGroup, "assets/img/laser.png", 14, 40)
+        local newBala = display.newImageRect(mainGroup, "assets/img/municao.png", 14, 40)
         newBala.rotation=newBala.rotation-270
         physics.addBody(newBala, "dynamic", {isSensor = true})
         newBala.isBullet = true
@@ -192,7 +192,7 @@ local function tiroDireita()
 end
 
 local function tiroEsquerda()
-        local newBala = display.newImageRect(mainGroup, "assets/img/laser.png", 14, 40)
+        local newBala = display.newImageRect(mainGroup, "assets/img/municao.png", 14, 40)
         newBala.rotation=newBala.rotation-90
         physics.addBody(newBala, "dynamic", {isSensor = true})
         newBala.isBullet = true
