@@ -36,3 +36,6 @@ Projeto de game da disciplina de estágio 1
   
 ## Mapa de Atividades
   https://trello.com/b/lWRz24M6/cabra-da-peste
+  
+## Estórias de Usuário
+  https://trello.com/b/4ETPw3l1/est%C3%B3rias-de-usu%C3%A1rio-cabra-da-peste
