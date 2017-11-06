@@ -134,7 +134,7 @@ end
 local function createInimigo()
 	local newHead = display.newImageRect( mainGroup, objectSheet, 2, 47, 98 )
 	table.insert( headsTable, newHead )
-	physics.addBody( newHead, "dynamic", { radius=10, bounce=0.4 } )
+	physics.addBody( newHead, "dynamic", { radius=30, bounce=0.4 } )
 	newHead.myName = "headGado"
 	newHead.isFixedRotation = true
 
@@ -166,7 +166,7 @@ local function tiroBala()
         newBala.rotation=newBala.rotation-270
         physics.addBody(newBala, "dynamic", {isSensor = true})
         newBala.isBullet = true
-        newBala.myName = "laser"
+        newBala.myName = "municao"
         newBala.x = lampiao.x+70
         newBala.y = lampiao.y+1
         newBala:toBack()
@@ -177,7 +177,7 @@ local function tiroBala()
         newBala.rotation=newBala.rotation-90
         physics.addBody(newBala, "dynamic", {isSensor = true})
         newBala.isBullet = true
-        newBala.myName = "laser"
+        newBala.myName = "municao"
         newBala.x = lampiao.x-70
         newBala.y = lampiao.y+1
         newBala:toBack()
@@ -188,10 +188,10 @@ local function tiroBala()
 
 local function gameLoop()
 	
-	   -- Create new asteroid
+	   -- Create new headGado
 	   createInimigo()
 	
-	   -- Remove asteroids which have drifted off screen
+	   -- Remove headGados which have drifted off screen
 	   for i = #headsTable, 1, -1 do
 		local thisHead = headsTable[i]
 		
@@ -207,6 +207,72 @@ local function gameLoop()
    end
 
 gameLoopTimer = timer.performWithDelay( 800, gameLoop, 0 )
+
+--Reviver Lampião
+local function reviverLampiao()
+	
+	   lampiao.isBodyActive = false
+	   lampiao.x = solo.x - 600
+	   lampiao.y = solo.y-195
+	
+	   -- Fade in the lampiao
+	   transition.to( lampiao, { alpha=1, time=4000,
+		   onComplete = function()
+			   lampiao.isBodyActive = true
+			   died = false
+		   end
+	   } )
+   end
+
+local function onCollision( event )
+	
+	if ( event.phase == "began" ) then
+
+		local obj1 = event.object1
+		local obj2 = event.object2
+
+		if ( ( obj1.myName == "municao" and obj2.myName == "headGado" ) or
+		( obj1.myName == "headGado" and obj2.myName == "municao" ) )
+			then
+			
+			-- Remove both the municao and headGado
+			display.remove( obj1 )
+			display.remove( obj2 )
+
+			for i = #headsTable, 1, -1 do
+			if ( headsTable[i] == obj1 or headsTable[i] == obj2 ) then
+				table.remove( headsTable, i )
+				break
+			end
+			end
+			
+			-- Increase score
+			score = score + 1
+			scoreText.text = "Score: " .. score
+		elseif ( ( obj1.myName == "lampiao" and obj2.myName == "headGado" ) or
+		( obj1.myName == "headGado" and obj2.myName == "lampiao" ) )
+			then
+			
+				if ( died == false ) then
+				died = true
+	
+				-- Update lives
+				lives = lives - 1
+				livesText.text = "Lives: " .. lives
+	
+				if ( lives == 0 ) then
+					display.remove( lampiao )
+				else
+					lampiao.alpha = 0
+					timer.performWithDelay( 1000, reviverLampiao )
+				end
+			end
+
+		end
+	end
+end
+
+Runtime:addEventListener( "collision", onCollision )
    
 
 function pular( event)

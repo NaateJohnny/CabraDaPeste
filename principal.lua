@@ -1,160 +1,411 @@
------------------------------------------------------------------------------------------
---
--- main.lua
---
------------------------------------------------------------------------------------------
+------ Level One -------
 
---OBS: Frame = quadro de animação. Ex: a sprite q usaremos contem 12 quadros de animação.
+display.setStatusBar(display.HiddenStatusBar)
 
-display.setStatusBar (display.HiddenStatusBar) -- esconde a barra de status 
 
-local w = display.contentWidth -- largura da tela
-local h = display.contentHeight -- altura da tela
+local composer = require("composer")
 
-local background = display.newImage("assets/img/quixada.png") -- cria uma nova imagem de fundo
+local scene = composer.newScene()
 
-local sheetData =  { width=107, height=115, numFrames=37 }
--- width: largura de cada frame
--- height: altura de cada frame
--- numFrames: número de frames da sprite
+function scene:create(event)
 
-local sheet = graphics.newImageSheet("assets/img/lampion.png", sheetData)
--- cria uma nova imagem usando a sprite "gaara.png" e as propriedades vistas acima
+--Load Sprite Sheets
+local sheetInfo = require("sprites.lampion")
+local sheet = graphics.newImageSheet( "assets/img/lampion.png", sheetInfo:getSheet() )
 
-local sequenceData = 
-{
-	{ name = "idleDown", start = 1, count = 1, time = 0, loopCount = 1 }, --idleDown = parado para baixo (é só um nome, vc quem nomeia como quiser)
-	-- name: nome desse movimento
-	-- start: frame da sprite onde a animação começa (nesse caso começa no primeiro frame da sprite)
-	-- count: número de frames para essa animação (nesse caso essa animação só terá um frame, o primeiro, aquele q o gaara tá parado pra baixo)
-	-- time: tempo de duração da animação (está zero pq essa animação só tem um quadro
-	-- loopCount: número de vezes que a animação é executada, nesse caso a animação só é executada uma vez, pois só tem um frame
-	
-	-- os outros vetores são da mesma forma, cada um com a sua animação
-    { name = "idleLeft", start = 4, count = 1, time = 0, loopCount = 1 }, --parado pra esquerda
-    { name = "idleRight", start = 7, count = 1, time = 0, loopCount = 1 }, --parado pra direita
-    { name = "idleUp", start = 10, count = 1, time = 0, loopCount = 1 }, --parado pra cima
-	
-	-- esses vetores já contem mais do q um frame de animação, então eles já mostram um movimento
-    { name = "moveDown", start = 2, count = 2, time = 300, loopCount = 0 },
-	-- nesse caso a animação começa do segundo frame e termina do terceiro (já q o count é igual a 2)
-	-- e o 'time' é igual a 300, isso significa q essa animação (moveDown), será executada em 300 centésimos de segundo, ou 0,3 segundos
-	-- o loopCount é igual a zero, isso significa q animação será executada para sempre, até q alguém cancele essa animação ou execute outra
-    { name = "moveLeft", start = 5, count = 2, time = 300, loopCount = 0 },
-	-- mesmo principio da animação de cima, mas agora começa no quinto frame (start=5) e contém 2 frames de animação apenas
-    { name = "moveRight", start = 8, count = 2, time = 300, loopCount = 0 },
-    { name = "moveUp", start = 11, count = 2, time = 300, loopCount = 0 },
-}
+local sheetInfo = require("sprites.gameObjetos")
+local objectSheet = graphics.newImageSheet( "assets/img/gameObjetos.png", sheetInfo:getSheet() )
 
-local player = display.newSprite(sheet, sequenceData)
--- cria finalmente a sprite utilizando as propriedades vistas acima
-player.x = w * .5
-player.y = h * .5
 
-player:setSequence("idleDown")
--- configura um valor inicial para sprite, nesse caso é o "idleDown", por isso o gaara começa olhando para baixo
+--Initialize Variables
+
+local lives = 3
+local score = 0
+local died = false
 
 local buttons = {}
 
-buttons[1] = display.newImage("button.png")
-buttons[1].x = 250
-buttons[1].y = 380
-buttons[1].myName = "up"
-buttons[1].rotation = -90
+local headsTable = {}
 
-buttons[2] = display.newImage("button.png")
-buttons[2].x = 250
-buttons[2].y = 440
-buttons[2].myName = "down"
-buttons[2].rotation = 90
+local lampiao
+local gameLoopTimer
+local livesText
+local scoreText
+local physics
 
-buttons[3] = display.newImage("button.png")
-buttons[3].x = 210
-buttons[3].y = 410
-buttons[3].myName = "left"
-buttons[3].rotation = 180
+local lado = "direito"
 
-buttons[4] = display.newImage("button.png")
-buttons[4].x = 290
-buttons[4].y = 410
-buttons[4].myName = "right"
+local w = display.contentWidth -- variable of width
+local h = display.contentHeight -- variable of higth
 
-local yAxis = 0
-local xAxis = 0
+local eixoX = w - 5
+local eixoY = h
 
-local touchFunction = function(e)
-	local eventName = e.phase
-	local direction = e.target.myName
+
+local sequenceLamp = {
+    { name= "paradoLeft", start = 18, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
+	{ name= "paradoRight", start = 3, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
+    { name= "andandoRight", start= 1, count = 14, time =700, loopCount = 0}, --loopDirection= "forward" },
+    { name= "andandoLeft", start= 15, count = 14, time =700, loopCount = 0},-- loopDirection= "forward" }
+
+}
+
+
+-- Set up display groups
+local backGroup = display.newGroup()  -- Display group for the background image
+local mainGroup = display.newGroup()  -- Display group for the Lampiao etc.
+local uiGroup = display.newGroup()    -- Display group for UI objects like the score
+
+
+--Physics the game
+physics = require("physics")
+physics.start()
+-- physics.setDrawMode("hybrid")
+
+-- Semear o gerador de números aleatórios
+math.randomseed( os.time() )
+
+--Backgroud image
+local background = display.newImageRect( backGroup, "assets/img/quixada.png", 1450, 696 )
+background.x = display.contentCenterX
+background.y = h - 510
+
+--Solo image
+local solo = display.newImageRect( backGroup, "assets/img/solo.png", 1450, 320 )
+solo.x = display.contentCenterX
+solo.y = h - 50
+physics.addBody(solo, "static",  {friction=.1, isSensor=false})
+
+local cactu = display.newImageRect( backGroup, "assets/img/cactuSprite.png", 100, 70 )
+cactu.x = display.contentCenterX - 80
+cactu.y = solo.y-195
+physics.addBody(cactu, "static", {friction= .1, isSensor=true})
+
+lampiao = display.newSprite( backGroup, sheet, sequenceLamp)
+lampiao.x = solo.x - 600
+lampiao.y = solo.y-195
+physics.addBody( lampiao, "dynamic", {box, bounce=0.1, friction=0, isSensor=false},
+{box={halfWidth=30, halfHeight=10, x=0, y=60}, isSensor=true } )
+lampiao: setSequence("paradoRight")
+lampiao:play()
+lampiao.isFixedRotation = true
+lampiao.myName = "lampiao"
+
+
+--lampiao: play()
+
+-- Display lives and score
+livesText = display.newText( uiGroup, "Lives: " .. lives, 200, 80, native.systemFont, 36 )
+scoreText = display.newText( uiGroup, "Score: " .. score, 400, 80, native.systemFont, 36 )
+
+-- Hide the status bar
+display.setStatusBar( display.HiddenStatusBar )
+
+local function updateText()
+    livesText.text = "Lives: " .. lives
+    scoreText.text = "Score: " .. score
+end
+
+
+local function update( event )
+	updateBackgrounds()
+end
+ 
+function updateBackgrounds()
+	--background movement
+	background.x = background.x - (2)
+ 
+	--solo movement
+	solo.x = solo.x - (2)
+
+	if(background.x < -200) then
+		background.x = 600
+	end
+ 
+	solo.x = solo.x - (2)
+
+	if(solo.x < -200) then
+		solo.x = 600
+	end
+
+
+end
+
+local function createInimigo()
+	local newHead = display.newImageRect( mainGroup, objectSheet, 2, 47, 98 )
+	table.insert( headsTable, newHead )
+	physics.addBody( newHead, "dynamic", { radius=30, bounce=0.4 } )
+	newHead.myName = "headGado"
+	newHead.isFixedRotation = true
+
+	local whereFrom = math.random( 3 )
+
+	if ( whereFrom == 1 ) then
+        -- From the left
+        newHead.x = -60
+		newHead.y = math.random( 100 )
+		newHead:setLinearVelocity( math.random( 30,90 ), math.random( 10,50 ) )
+	elseif ( whereFrom == 2 ) then
+        -- From the top
+        newHead.x = math.random( display.contentWidth )
+        newHead.y =  -60
+        newHead:setLinearVelocity( math.random( -20,20 ), math.random( 30,90 ) )
+    elseif ( whereFrom == 3 ) then
+        -- From the right
+        newHead.x = display.contentWidth + 60 
+        newHead.y = math.random( 100 )
+        newHead:setLinearVelocity( math.random( -90,-30 ), math.random( 10,50 ) )
+	end
 	
-	if eventName == "began" or eventName == "moved" then
-		if direction == "up" then 
-			player:setSequence("moveUp")
-			-- caso o botão pra cima for precionado ou arrastado, 
-			-- animação é trocada para a "moveUp" q mostra uma animação do gaara se movimentando para cima
-			
-			yAxis = -5
-			xAxis = 0
-		elseif direction == "down" then 
-			player:setSequence("moveDown")
-			-- mesmo principio do moveUp, mas agora é mostrada a animação do gaara olhando para baixo
+	newHead:applyTorque( math.random( -3,3 ) )
+end
 
-			yAxis = 5
-			xAxis = 0
-		elseif direction == "right" then
-			player:setSequence("moveRight")
+local function tiroBala()
+	if lado == "direito" then
+		local newBala = display.newImageRect(mainGroup, "assets/img/municao.png", 7, 25)
+        newBala.rotation=newBala.rotation-270
+        physics.addBody(newBala, "dynamic", {isSensor = true})
+        newBala.isBullet = true
+        newBala.myName = "municao"
+        newBala.x = lampiao.x+70
+        newBala.y = lampiao.y+1
+        newBala:toBack()
+        transition.to(newBala, {x=1400, time=300, 
+			onComplete = function() display.remove(newBala) end})
+	elseif lado == "esquerdo" then
+        local newBala = display.newImageRect(mainGroup, "assets/img/municao.png", 7, 25)
+        newBala.rotation=newBala.rotation-90
+        physics.addBody(newBala, "dynamic", {isSensor = true})
+        newBala.isBullet = true
+        newBala.myName = "municao"
+        newBala.x = lampiao.x-70
+        newBala.y = lampiao.y+1
+        newBala:toBack()
+        transition.to(newBala, {x=-300, time=300, 
+			onComplete = function() display.remove(newBala) end})
+	end
+ end
 
-			xAxis = 5
-			yAxis = 0
-		elseif direction == "left" then
-			player:setSequence("moveLeft")
-
-			xAxis = -5
-			yAxis = 0
-		end
-	else 
-		-- caso os botões sejam soltos uma dessas funções será executada, 
-		-- isso serve para q quando alguém soltar os botões, o player não continue movimentando,
-		-- então a animação é trocada para os frames em q o gaara está parado
-		if e.target.myName == "up" then 
-			player:setSequence("idleUp")
-			-- a animação "idleUp"(parado para cima) é ativada se o jogar soltar o botão para cima
-		elseif e.target.myName == "down" then 
-			player:setSequence("idleDown")
-			-- mesmo principio do "idleUp", mas agora o gaara olha para baixo
-		elseif e.target.myName == "right" then
-			player:setSequence("idleRight")
-		elseif e.target.myName == "left" then
-			player:setSequence("idleLeft")
-		end
+local function gameLoop()
+	
+	   -- Create new headGado
+	   createInimigo()
+	
+	   -- Remove headGados which have drifted off screen
+	   for i = #headsTable, 1, -1 do
+		local thisHead = headsTable[i]
 		
-		yAxis = 0
-		xAxis = 0
-	end
-end
+			   if ( thisHead.x < -100 or
+			   		thisHead.x > display.contentWidth + 50 or
+			   		thisHead.y < -100 or
+			   		thisHead.y > display.contentHeight + 50 )
+			   then
+				   display.remove( thisHead )
+				   table.remove( headsTable, i )
+			   end
+	   end
+   end
 
-local j=1
+gameLoopTimer = timer.performWithDelay( 800, gameLoop, 0 )
 
-for j=1, #buttons do 
-	buttons[j]:addEventListener("touch", touchFunction)
-end
-
-local update = function()
-	player.x = player.x + xAxis
-	player.y = player.y + yAxis
-
-	if player.x <= player.width * .5 then 
-		player.x = player.width * .5
-	elseif player.x >= w - player.width * .5 then 
-		player.x = w - player.width * .5
-	end
-
-	if player.y <= player.height * .5 then
-		player.y = player.height * .5
-	elseif player.y >= h - player.height * .5 then 
-		player.y = h - player.height * .5
-	end 
+--Reviver Lampião
+local function reviverLampiao()
 	
-	player:play() --executa a animação, é necessário usar essa função para ativar a animação
+	   lampiao.isBodyActive = false
+	   lampiao.x = solo.x - 600
+	   lampiao.y = solo.y-195
+	
+	   -- Fade in the lampiao
+	   transition.to( lampiao, { alpha=1, time=4000,
+		   onComplete = function()
+			   lampiao.isBodyActive = true
+			   died = false
+		   end
+	   } )
+   end
+
+local function onCollision( event )
+	
+	if ( event.phase == "began" ) then
+
+		local obj1 = event.object1
+		local obj2 = event.object2
+
+		if ( ( obj1.myName == "municao" and obj2.myName == "headGado" ) or
+		( obj1.myName == "headGado" and obj2.myName == "municao" ) )
+			then
+			
+			-- Remove both the municao and headGado
+			display.remove( obj1 )
+			display.remove( obj2 )
+
+			for i = #headsTable, 1, -1 do
+			if ( headsTable[i] == obj1 or headsTable[i] == obj2 ) then
+				table.remove( headsTable, i )
+				break
+			end
+			end
+			
+			-- Increase score
+			score = score + 1
+			scoreText.text = "Score: " .. score
+		elseif ( ( obj1.myName == "lampiao" and obj2.myName == "headGado" ) or
+		( obj1.myName == "headGado" and obj2.myName == "lampiao" ) )
+			then
+			
+				if ( died == false ) then
+				died = true
+	
+				-- Update lives
+				lives = lives - 1
+				livesText.text = "Lives: " .. lives
+	
+				if ( lives == 0 ) then
+					display.remove( lampiao )
+				else
+					lampiao.alpha = 0
+					timer.performWithDelay( 1000, reviverLampiao )
+				end
+			end
+
+		end
+	end
 end
 
-Runtime:addEventListener("enterFrame", update)
+Runtime:addEventListener( "collision", onCollision )
+   
+
+function pular( event)
+    if event.phase=="began" then
+		local vx, vy = lampiao:getLinearVelocity()
+		--lampiao:setLinearVelocity(vx, -250)
+        lampiao:applyLinearImpulse(0, -1.2, lampiao.x, lampiao.y)
+	end
+end
+
+local function andandoRight( event )
+
+  if ( "began" == event.phase ) then
+	-- audio.play( moveTrack )
+	lado = "direito"
+    lampiao:setSequence( "andandoRight" )
+	lampiao:play()
+    -- start moving lampiao
+	lampiao:applyLinearImpulse( 1, 0, lampiao.x, lampiao.y )
+	lampiao:addEventListener( "tap", tiroBala )
+  elseif ( "ended" == event.phase ) then
+    lampiao:setSequence( "paradoRight" )
+    lampiao:play()
+	--lampiao:setFrame(1)
+    -- stop moving lampiao
+    lampiao:setLinearVelocity( 0,0 )
+  end
+end
+
+local function andandoLeft( event )
+	if ( "began" == event.phase ) then
+		-- audio.play( moveTrack )
+		lado = "esquerdo"
+    	lampiao:setSequence( "andandoLeft" )
+    	lampiao:play()
+		lampiao:applyLinearImpulse( -1, 0, lampiao.x, lampiao.y )
+		lampiao:addEventListener( "tap", tiroBala )
+  	elseif ( "ended" == event.phase ) then
+    	lampiao:setSequence( "paradoLeft" )
+		lampiao:play()
+    	--lampiao:setFrame(1)
+    	lampiao:setLinearVelocity( 0,0 )
+  	--[[else
+
+		if event.target.myName == "buttonLeft" then
+			lampiao:setSequence("paradoRight")
+		elseif e.target.myName == "buttonLeft" then
+			lampiao:setSequence("paradoLeft")
+		end
+
+        eixoX = 0
+        eixoY = 0
+    end]]
+  end
+end
+
+--timer.performWithDelay(1, update, -1)
+
+
+-- Initialize widget(Botões)
+widget = require("widget")
+
+-- Load gamepad start
+--atk_button = widget.newButton( {
+	-- The id can be used to tell you what button was pressed in your button event
+--	id = "atk_button",
+	-- Size of the button
+--	width = 80,
+--	height = 80,
+--	-- This is the default button image
+--	defaultFile = "assets/img/atk_button.png",
+	-- This is the pressed button image
+--	overFile = "assets/img/atk_button_on_press.png",
+	-- Position of the button
+--	left = display.contentCenterX + 350,
+--	top = display.contentCenterY + 180,
+	-- This tells it what function to call when you press the button
+--		onPress = atk
+--	} )
+
+jump_button = widget.newButton( {
+	id = "jumpButton",
+	width = 80,
+	height = 80,
+	defaultFile = "assets/buttons/lineLight23.png",
+	left = 1000,
+	top = 640,
+	onEvent = pular
+} )
+
+atack_button = widget.newButton( {
+	id = "atack_button",
+	width = 80,
+	height = 80,
+	defaultFile = "assets/buttons/lineAtack.png",
+	left = 850,
+	top = 640,
+	onEvent = tiroBala;
+} )
+
+left_button = widget.newButton( {
+	id = "left_button",
+	width = 80,
+	height = 80,
+	defaultFile = "assets/buttons/lineLight22.png",
+	left = -100,
+	top = 640,
+	onEvent = andandoLeft
+} )
+
+right_button = widget.newButton( {
+	id = "right_button",
+	width = 80,
+	height = 80,
+	defaultFile = "assets/buttons/lineLight23.png",
+	left = 10,
+	top = 640,
+	onEvent = andandoRight
+} )
+
+right_button.alpha = .2;
+left_button.alpha = .2;
+atack_button.alpha = .2;
+jump_button.alpha = .2;
+jump_button.rotation = -90;
+
+--uiGroup:insert( atk_button )
+--uiGroup:insert( jump_button )
+--uiGroup:insert( right_button )
+--uiGroup:insert( left_button )
+-- Load gamepad end
+
+end
+
+scene:addEventListener("create",create)
+return scene
