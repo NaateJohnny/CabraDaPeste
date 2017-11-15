@@ -1,18 +1,17 @@
------- Level One -------
 
-display.setStatusBar(display.HiddenStatusBar)
-
-
-local composer = require("composer")
+local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+-- -----------------------------------------------------------------------------------
+-- Code outside of the scene event functions below will only be executed ONCE unless
+-- the scene is removed entirely (not recycled) via "composer.removeScene()"
+-- -----------------------------------------------------------------------------------
+
 --Physics the game
+local physics
 physics = require("physics")
 physics.start()
--- physics.setDrawMode("hybrid")
-
-function scene:create(event)
 
 --Load Sprite Sheets
 local sheetInfo = require("sprites.lampion")
@@ -32,11 +31,15 @@ local buttons = {}
 
 local headsTable = {}
 
+local background
+local cactu
+local solo
+
 local lampiao
 local gameLoopTimer
 local vidasText
 local pontosText
-local physics
+
 
 local lado = "direito"
 
@@ -55,59 +58,15 @@ local sequenceLamp = {
 
 }
 
-
 -- Set up display groups
-local backGroup = display.newGroup()  -- Display group for the background image
-local mainGroup = display.newGroup()  -- Display group for the Lampiao etc.
-local uiGroup = display.newGroup()    -- Display group for UI objects like the pontos
-
-
-
--- Display vidas and pontos
-vidasText = display.newText( uiGroup, "Vidas: " .. vidas, 200, 80, native.systemFont, 36 )
-pontosText = display.newText( uiGroup, "Pontos: " .. pontos, 400, 80, native.systemFont, 36 )
-
+local backGroup --= display.newGroup()  -- Display group for the background image
+local mainGroup --= display.newGroup()  -- Display group for the Lampiao etc.
+local uiGroup --= display.newGroup()    -- Display group for UI objects like the pontos
 
 local function updateText()
-    vidasText.text = "Vidas: " .. vidas
-    pontosText.text = "Pontos: " .. pontos
+	vidasText.text = "Vidas: " .. vidas
+	pontosText.text = "Pontos: " .. pontos
 end
-
---Physics the game
-physics = require("physics")
-physics.start()
--- physics.setDrawMode("hybrid")
--- Semear o gerador de números aleatórios
---math.randomseed( os.time() )
-
---Backgroud image
-local background = display.newImageRect( backGroup, "assets/img/quixada.png", 1450, 696 )
-background.x = display.contentCenterX
-background.y = h - 510
-
---Solo image
-local solo = display.newImageRect( backGroup, "assets/img/solo.png", 1450, 320 )
-solo.x = display.contentCenterX
-solo.y = h - 50
-physics.addBody(solo, "static",  {friction=.1, isSensor=false})
-
-local cactu = display.newImageRect( backGroup, "assets/img/cactuSprite.png", 100, 70 )
-cactu.x = display.contentCenterX - 80
-cactu.y = solo.y-195
-physics.addBody(cactu, "static", {friction= .1, isSensor=true})
-
-lampiao = display.newSprite( backGroup, sheet, sequenceLamp)
-lampiao.x = solo.x - 600
-lampiao.y = solo.y-195
-physics.addBody( lampiao, "dynamic", {box, bounce=0.1, friction=0, isSensor=false},
-{box={halfWidth=30, halfHeight=10, x=0, y=60}, isSensor=true } )
-lampiao: setSequence("paradoRight")
-lampiao:play()
-lampiao.isFixedRotation = true
-lampiao.myName = "lampiao"
-
-
---lampiao: play()
 
 
 local function update( event )
@@ -209,7 +168,7 @@ local function gameLoop()
 	   end
    end
 
-gameLoopTimer = timer.performWithDelay( 800, gameLoop, 0 )
+--gameLoopTimer = timer.performWithDelay( 800, gameLoop, 0 )
 
 --Reviver Lampião
 local function reviverLampiao()
@@ -228,7 +187,9 @@ local function reviverLampiao()
 end
 
 local function endGame()
-	composer.gotoScene( "menu", { time=800} )
+	composer.setVariable( "finalScore", pontos )
+    composer.gotoScene( "morreu", { time=800, effect="crossFade" } )
+	--composer.removeScene("menu")
 end
 
 local function onCollision( event )
@@ -269,10 +230,14 @@ local function onCollision( event )
 	
 				if ( vidas == 0 and morto == true ) then
 					display.remove( lampiao )
-					timer.performWithDelay( 2000, endGame )
+					display.remove(jump_button)
+					display.remove(atack_button)
+					display.remove(right_button)
+					display.remove(left_button)
+					timer.performWithDelay( 400, endGame )
 				else
 					lampiao.alpha = 0
-					timer.performWithDelay( 1000, reviverLampiao )
+					timer.performWithDelay( 950, reviverLampiao )
 				end
 			end
 
@@ -280,7 +245,7 @@ local function onCollision( event )
 	end
 end
 
-Runtime:addEventListener( "collision", onCollision )
+--Runtime:addEventListener( "collision", onCollision )
    
 
 function pular( event)
@@ -299,7 +264,7 @@ local function andandoRight( event )
 	lampiao:play()
     -- start moving lampiao
 	lampiao:applyLinearImpulse( 1, 0, lampiao.x, lampiao.y )
-	lampiao:addEventListener( "tap", tiroBala )
+	--lampiao:addEventListener( "tap", tiroBala )
   elseif ( "ended" == event.phase ) then
     lampiao:setSequence( "paradoRight" )
     lampiao:play()
@@ -314,7 +279,7 @@ local function andandoLeft( event )
     	lampiao:setSequence( "andandoLeft" )
     	lampiao:play()
 		lampiao:applyLinearImpulse( -1, 0, lampiao.x, lampiao.y )
-		lampiao:addEventListener( "tap", tiroBala )
+		--lampiao:addEventListener( "tap", tiroBala )
   	elseif ( "ended" == event.phase ) then
     	lampiao:setSequence( "paradoLeft" )
 		lampiao:play()
@@ -326,63 +291,177 @@ end
 --timer.performWithDelay(1, update, -1)
 
 
--- Initialize widget(Botões)
-widget = require("widget")
+-- -----------------------------------------------------------------------------------
+-- Scene event functions
+-- -----------------------------------------------------------------------------------
 
+-- create()
+function scene:create( event )
 
-jump_button = widget.newButton( {
-	id = "jumpButton",
-	width = 80,
-	height = 80,
-	defaultFile = "assets/buttons/lineLight23.png",
-	left = 1000,
-	top = 640,
-	onEvent = pular
-} )
+	local sceneGroup = self.view
+	-- Code here runs when the scene is first created but has not yet appeared on screen
 
-atack_button = widget.newButton( {
-	id = "atack_button",
-	width = 80,
-	height = 80,
-	defaultFile = "assets/buttons/lineAtack.png",
-	left = 850,
-	top = 640,
-	onEvent = tiroBala;
-} )
+	physics.pause()
+	
+	-- Set up display groups
+	backGroup = display.newGroup()  -- Display group for the background image
+	sceneGroup:insert(backGroup)  -- Insert into the scene's view group
+		
+	mainGroup = display.newGroup()  -- Display group for the ship, asteroids, lasers, etc.
+	sceneGroup:insert(mainGroup)  -- Insert into the scene's view group
+		
+	uiGroup = display.newGroup()    -- Display group for UI objects like the score
+	sceneGroup:insert(uiGroup)    -- Insert into the scene's view group
 
-left_button = widget.newButton( {
-	id = "left_button",
-	width = 80,
-	height = 80,
-	defaultFile = "assets/buttons/lineLight22.png",
-	left = -100,
-	top = 640,
-	onEvent = andandoLeft
-} )
+		
+	--Backgroud image
+	background = display.newImageRect( backGroup, "assets/img/quixada.png", 1450, 696 )
+	background.x = display.contentCenterX
+	background.y = h - 510
 
-right_button = widget.newButton( {
-	id = "right_button",
-	width = 80,
-	height = 80,
-	defaultFile = "assets/buttons/lineLight23.png",
-	left = 10,
-	top = 640,
-	onEvent = andandoRight
-} )
+	--Solo image
+	solo = display.newImageRect( backGroup, "assets/img/solo.png", 1450, 320 )
+	solo.x = display.contentCenterX
+	solo.y = h - 50
+	physics.addBody(solo, "static",  {friction=.1, isSensor=false})
 
-right_button.alpha = .2;
-left_button.alpha = .2;
-atack_button.alpha = .2;
-jump_button.alpha = .2;
-jump_button.rotation = -90;
+	cactu = display.newImageRect( backGroup, "assets/img/cactuSprite.png", 100, 70 )
+	cactu.x = display.contentCenterX - 80
+	cactu.y = solo.y-195
+	physics.addBody(cactu, "static", {friction= .1, isSensor=true})
 
---uiGroup:insert( atk_button )
---uiGroup:insert( jump_button )
---uiGroup:insert( right_button )
---uiGroup:insert( left_button )
--- Load gamepad end
+	lampiao = display.newSprite( backGroup, sheet, sequenceLamp)
+	lampiao.x = solo.x - 600
+	lampiao.y = solo.y-195
+	physics.addBody( lampiao, "dynamic", {box, bounce=0.1, friction=0, isSensor=false},
+	{box={halfWidth=30, halfHeight=10, x=0, y=60}, isSensor=true } )
+	lampiao: setSequence("paradoRight")
+	lampiao:play()
+	lampiao.isFixedRotation = true
+	lampiao.myName = "lampiao"
+
+	
+	-- Display vidas and pontos
+	vidasText = display.newText( uiGroup, "Vidas: " .. vidas, 10, 40, "xilosa.ttf", 36 )
+	pontosText = display.newText( uiGroup, "Pontos: " .. pontos, 210, 40, "xilosa.ttf", 36 )
+
 
 end
 
-scene:addEventListener("create",create)
+
+-- show()
+function scene:show( event )
+
+	local sceneGroup = self.view
+	local phase = event.phase
+
+	if ( phase == "will" ) then
+		-- Code here runs when the scene is still off screen (but is about to come on screen)
+
+	elseif ( phase == "did" ) then
+		-- Code here runs when the scene is entirely on screen
+		
+		physics.start()
+		Runtime:addEventListener( "collision", onCollision )
+		gameLoopTimer = timer.performWithDelay( 1300, gameLoop, 0 )
+				
+		-- Initialize widget(Botões)
+		widget = require("widget")
+
+
+		jump_button = widget.newButton( {
+			id = "jumpButton",
+			width = 80,
+			height = 80,
+			defaultFile = "assets/buttons/lineLight23.png",
+			left = 1000,
+			top = 640,
+			onEvent = pular
+		} )
+
+		atack_button = widget.newButton( {
+			id = "atack_button",
+			width = 80,
+			height = 80,
+			defaultFile = "assets/buttons/lineAtack.png",
+			left = 850,
+			top = 640,
+			onEvent = tiroBala;
+		} )
+
+		left_button = widget.newButton( {
+			id = "left_button",
+			width = 80,
+			height = 80,
+			defaultFile = "assets/buttons/lineLight22.png",
+			left = -100,
+			top = 640,
+			onEvent = andandoLeft
+		} )
+
+		right_button = widget.newButton( {
+			id = "right_button",
+			width = 80,
+			height = 80,
+			defaultFile = "assets/buttons/lineLight23.png",
+			left = 10,
+			top = 640,
+			onEvent = andandoRight
+		} )
+
+		right_button.alpha = .2;
+		left_button.alpha = .2;
+		atack_button.alpha = .2;
+		jump_button.alpha = .2;
+		jump_button.rotation = -90;
+
+		--uiGroup:insert( atk_button )
+		--uiGroup:insert( jump_button )
+		--uiGroup:insert( right_button )
+		--uiGroup:insert( left_button )
+		-- Load gamepad end
+
+	end
+end
+
+
+-- hide()
+function scene:hide( event )
+
+	local sceneGroup = self.view
+	local phase = event.phase
+
+	if ( phase == "will" ) then
+        -- Code here runs when the scene is on screen (but is about to go off screen)
+        timer.cancel( gameLoopTimer )
+
+	elseif ( phase == "did" ) then
+		-- Code here runs immediately after the scene goes entirely off screen
+		Runtime:removeEventListener( "collision", onCollision )
+		physics.pause()
+		composer.removeScene( "game" )
+		
+
+	end
+end
+
+
+-- destroy()
+function scene:destroy( event )
+
+	local sceneGroup = self.view
+	-- Code here runs prior to the removal of scene's view
+
+end
+
+
+-- -----------------------------------------------------------------------------------
+-- Scene event function listeners
+-- -----------------------------------------------------------------------------------
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
+-- -----------------------------------------------------------------------------------
+
 return scene
