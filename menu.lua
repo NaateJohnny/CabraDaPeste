@@ -21,6 +21,11 @@ local function PontosGame()
     composer.gotoScene("highscores", { time=800, effect="crossFade" } )
 end
 
+local function CreditosGame()
+    composer.removeScene("creditos")
+    composer.gotoScene("creditos", { time=800, effect="crossFade" } )
+end
+
 local function exitGame()
     timer.performWithDelay( 1000,
     function()
@@ -68,6 +73,8 @@ function scene:create(event)
     playButton:addEventListener("tap", playGame)
 
     pontosButton:addEventListener("tap", PontosGame)
+
+    creditosButton:addEventListener("tap", CreditosGame)
 
     exitButton:addEventListener("tap", exitGame)
 end
