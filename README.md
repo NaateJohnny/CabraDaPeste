@@ -8,7 +8,7 @@ Projeto de game da disciplina de estágio 1
 
 
 ## Objetivos
-  Destruir as adversidades que destrói o nordeste brasileiro. Ex.: fome, seca, pobresa.
+  Destruir as adversidades que destrói o nordeste brasileiro. Ex.: fome, seca, pobreza.
   
 
 ## Diagrama de navegação
