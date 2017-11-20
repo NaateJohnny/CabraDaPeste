@@ -48,10 +48,10 @@ local eixoY = h
 
 
 local sequenceLamp = {
-    { name= "paradoLeft", start = 18, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
-	{ name= "paradoRight", start = 3, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
-    { name= "andandoRight", start= 1, count = 14, time =700, loopCount = 0}, --loopDirection= "forward" },
-    { name= "andandoLeft", start= 15, count = 14, time =700, loopCount = 0},-- loopDirection= "forward" }
+    { name= "paradoLeft", start = 18, count = 0, time = 600 , loopCount = 0},--loopDirection = "forward"},
+	{ name= "paradoRight", start = 3, count = 0, time = 600 , loopCount = 0},--loopDirection = "forward"},
+    { name= "andandoRight", start= 1, count = 14, time =600, loopCount = 0}, --loopDirection= "forward" },
+    { name= "andandoLeft", start= 15, count = 14, time =600, loopCount = 0},-- loopDirection= "forward" }
 
 }
 

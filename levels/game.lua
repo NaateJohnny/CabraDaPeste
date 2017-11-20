@@ -13,6 +13,8 @@ local physics
 physics = require("physics")
 physics.start()
 
+system.activate( "multitouch" )
+
 --Load Sprite Sheets
 local sheetInfo = require("sprites.lampion")
 local sheet = graphics.newImageSheet( "assets/img/lampion.png", sheetInfo:getSheet() )
@@ -33,7 +35,11 @@ local headsTable = {}
 
 local background
 local cactu
+local cactu2
 local solo
+
+local barreira1
+local barreira2
 
 local lampiao
 local gameLoopTimer
@@ -51,10 +57,10 @@ local eixoY = h
 
 
 local sequenceLamp = {
-    { name= "paradoLeft", start = 18, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
-	{ name= "paradoRight", start = 3, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
-    { name= "andandoRight", start= 1, count = 14, time =700, loopCount = 0}, --loopDirection= "forward" },
-    { name= "andandoLeft", start= 15, count = 14, time =700, loopCount = 0},-- loopDirection= "forward" }
+    { name= "paradoLeft", start = 14, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
+	{ name= "paradoRight", start = 13, count = 0, time = 800 , loopCount = 0},--loopDirection = "forward"},
+    { name= "andandoRight", start= 1, count = 6, time =700, loopCount = 0}, --loopDirection= "forward" },
+    { name= "andandoLeft", start= 7, count = 6, time =700, loopCount = 0},-- loopDirection= "forward" }
 
 }
 
@@ -130,7 +136,7 @@ local function tiroBala()
         newBala.isBullet = true
         newBala.myName = "municao"
         newBala.x = lampiao.x+70
-        newBala.y = lampiao.y+1
+        newBala.y = lampiao.y+5
         newBala:toBack()
         transition.to(newBala, {x=1400, time=300, 
 			onComplete = function() display.remove(newBala) end})
@@ -141,7 +147,7 @@ local function tiroBala()
         newBala.isBullet = true
         newBala.myName = "municao"
         newBala.x = lampiao.x-70
-        newBala.y = lampiao.y+1
+        newBala.y = lampiao.y+5
         newBala:toBack()
         transition.to(newBala, {x=-300, time=300, 
 			onComplete = function() display.remove(newBala) end})
@@ -315,7 +321,7 @@ function scene:create( event )
 
 		
 	--Backgroud image
-	background = display.newImageRect( backGroup, "assets/img/quixada.png", 1450, 696 )
+	background = display.newImageRect( backGroup, "assets/img/quixada7.png", 1450, 950 )
 	background.x = display.contentCenterX
 	background.y = h - 510
 
@@ -325,10 +331,30 @@ function scene:create( event )
 	solo.y = h - 50
 	physics.addBody(solo, "static",  {friction=.1, isSensor=false})
 
-	cactu = display.newImageRect( backGroup, "assets/img/cactuSprite.png", 100, 70 )
-	cactu.x = display.contentCenterX - 80
+	cactu = display.newImageRect( backGroup, "assets/img/cactuSprite.png", 80, 75 )
+	cactu.x = display.contentCenterX - 130
 	cactu.y = solo.y-195
 	physics.addBody(cactu, "static", {friction= .1, isSensor=true})
+
+	cactu2 = display.newImageRect( backGroup, "assets/img/cactuSprite.png", 90, 90 )
+	cactu2.x = display.contentCenterX + 400
+	cactu2.y = solo.y-195
+	physics.addBody(cactu2, "static", {friction= .1, isSensor=true})
+
+	barreira1 = display.newRect(2, 1080, 2, 1080)
+	barreira1.x = solo.x - 700
+	barreira1.y = solo.y-195
+	barreira1:setFillColor(0,255,0)
+	--barreira1.alpha = 2
+	physics.addBody(barreira1, "static")
+
+	barreira2 = display.newRect(2, 1080, 2, 1080)
+	barreira2.x = solo.x + 700
+	barreira2.y = solo.y-195
+	barreira2:setFillColor(0,255,0)
+	--barreira1.alpha = 2
+	physics.addBody(barreira2, "static")
+
 
 	lampiao = display.newSprite( backGroup, sheet, sequenceLamp)
 	lampiao.x = solo.x - 600
@@ -343,7 +369,9 @@ function scene:create( event )
 	
 	-- Display vidas and pontos
 	vidasText = display.newText( uiGroup, "Vidas: " .. vidas, 10, 40, "xilosa.ttf", 36 )
+	vidasText:setFillColor( 0, 0, 0 )
 	pontosText = display.newText( uiGroup, "Pontos: " .. pontos, 210, 40, "xilosa.ttf", 36 )
+	pontosText:setFillColor( 0, 0, 0 )
 
 
 end
@@ -371,41 +399,41 @@ function scene:show( event )
 
 		jump_button = widget.newButton( {
 			id = "jumpButton",
-			width = 80,
-			height = 80,
+			width = 120,
+			height = 120,
 			defaultFile = "assets/buttons/lineLight23.png",
 			left = 1000,
-			top = 640,
+			top = 615,
 			onEvent = pular
 		} )
 
 		atack_button = widget.newButton( {
 			id = "atack_button",
-			width = 80,
-			height = 80,
+			width = 120,
+			height = 120,
 			defaultFile = "assets/buttons/lineAtack.png",
-			left = 850,
-			top = 640,
+			left = 790,
+			top = 615,
 			onEvent = tiroBala;
 		} )
 
 		left_button = widget.newButton( {
 			id = "left_button",
-			width = 80,
-			height = 80,
+			width = 120,
+			height = 120,
 			defaultFile = "assets/buttons/lineLight22.png",
-			left = -100,
-			top = 640,
+			left = -128,
+			top = 615,
 			onEvent = andandoLeft
 		} )
 
 		right_button = widget.newButton( {
 			id = "right_button",
-			width = 80,
-			height = 80,
+			width = 120,
+			height = 120,
 			defaultFile = "assets/buttons/lineLight23.png",
-			left = 10,
-			top = 640,
+			left = 80,
+			top = 615,
 			onEvent = andandoRight
 		} )
 
