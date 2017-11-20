@@ -422,7 +422,7 @@ function scene:show( event )
 			width = 120,
 			height = 120,
 			defaultFile = "assets/buttons/lineLight22.png",
-			left = -128,
+			left = -100,
 			top = 615,
 			onEvent = andandoLeft
 		} )
@@ -432,7 +432,7 @@ function scene:show( event )
 			width = 120,
 			height = 120,
 			defaultFile = "assets/buttons/lineLight23.png",
-			left = 80,
+			left = 110,
 			top = 615,
 			onEvent = andandoRight
 		} )
